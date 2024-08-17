@@ -22,8 +22,8 @@
       <tr>
         <th>Img</th>
         <td>
-            <img src="{{asset('storage/'.$article->img)}}" alt="" width="30%">
-            <!-- <img src="{{ asset('storage/' . $article->img) }}" alt="Image for {{ $article->title }}"> -->
+            <!-- <img src="{{asset('storage/'.$article->img)}}" alt="" width="30%"> -->
+            <img src="{{ asset('storage/' . $article->img) }}" alt="Image for {{ $article->title }}" width="30%">
         </td>
       </tr>
       <tr>
