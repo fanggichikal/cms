@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ArticleRequest;
+use App\Http\Requests\ArticleUpdateRequest;
 use App\Models\Article;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 class ArticleController extends Controller
@@ -19,7 +22,11 @@ class ArticleController extends Controller
         return view('backend.article.article',[
         'articles'=> Article::with('Category')->latest()->get()]);
     }
-
+    
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     // public function table()
     // {
     //     $data = Article::paginate(10); // Ganti dengan logika pengambilan data Anda
@@ -38,47 +45,29 @@ class ArticleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(ArticleRequest $request)
     {
-         // Validasi input
-         $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'title' => 'required|string|max:255',
-            'slug' => 'nullable',
-            'desc' => 'required|string',
-            'img' => 'nullable|image|file|mimes:jpeg,png,jpg,gif|max:2048',
-            'status' => 'required|string',
-            'publish_date' => 'required|string',
-        ]);
-
         // Handle upload gambar jika ada
         if ($request->hasFile('img')) {
             $img = $request->file('img')->store('img', 'public');
         } else {
             $img = null;
         }
+        
 
         // Membuat artikel baru
-        $article = new Article;
-        $article->title = $request->title;
-        $article->category_id = $request->category_id;
-        $article['slug'] = Str::slug($article['name']);
-        $article->desc = $request->desc;
-        $article->img = $img;
-        $article->status = $request->status;
-        $article->publish_date = $request->publish_date;
-        $article->save();
+        $article = Article::create($request->validated());
         
-        return redirect()->route('article.index')->with('success', 'Article added successfully');
+        return redirect()->route('article.index',$article->slug)->with('success', 'Article added successfully');
 
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $slug)
     {
-        $article = Article::findOrFail($id);
+        $article = Article::where('slug',$slug)->findOrFail();
         return view('backend.article.detail', compact('article'));
     }
 
@@ -96,18 +85,10 @@ class ArticleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(ArticleUpdateRequest $request, $slug)
     {
-        // Validasi input
-        $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'title' => 'required|string|max:255',
-            'slug' => 'nullable',
-            'desc' => 'required|string',
-            'img' => 'nullable|image|file|mimes:jpeg,png,jpg,gif|max:2048',
-            'status' => 'required|string',
-            'publish_date' => 'required|string',
-        ]);
+        $article = Article::where('slug', $slug)->firstOrFail();
+        $article->update($request->validated());
 
         // Handle upload gambar jika ada
         // if ($request->hasFile('img')) {
@@ -115,16 +96,7 @@ class ArticleController extends Controller
         // } else {
         //     $img = null;
         // }
-
-        // Membuat artikel baru
-        $article = Article::findOrFail($id);
-        $article->title = $request->input('title');
-        $article->desc = $request->input('desc');
-        $article->status = $request->input('status');
-        $article->publish_date = $request->input('publish_date');
-        $article->category()->associate($request->input('category_id'));
-        $article['slug'] = Str::slug($article['name']);
-
+        $article->update($request->validated());
         if ($request->hasFile('img')) {
             // Hapus gambar lama jika ada
             if ($article->img) {
@@ -135,9 +107,8 @@ class ArticleController extends Controller
             $path = $request->file('img')->store('img', 'public');
             $article->img = $path;
         }
-    
-        $article->save();
-        return redirect()->route('article.index')->with('success', 'Article Update successfully');
+       
+        return redirect()->route('article.index',$article->slug)->with('success', 'Article Update successfully');
     }
 
     /**

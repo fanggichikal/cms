@@ -24,6 +24,11 @@ class CategoryController extends Controller
              // categories disini berfungsi untuk memanggil di forech sebagai array di blade category
         ]);
     }
+
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
     // public function table()
     // {
     //     $data = Category::paginate(10); // Ganti dengan logika pengambilan data Anda

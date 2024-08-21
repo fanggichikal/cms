@@ -41,7 +41,7 @@
   <!-- <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search"> -->
   <div class="navbar-nav">
     <div class="nav-item text-nowrap">
-      <h3 class="nav-link px-5 my-2"> User </h3>
+      <h6 class="text-white px-5 my-2"> {{ Auth::user()->name }} </h6>
     </div>
   </div>
 </header>
