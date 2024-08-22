@@ -28,7 +28,7 @@ class ArticleRequest extends FormRequest
             'desc' => 'required|string',
             'img' => 'nullable|image|file|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|string',
-            'publish_date' => 'required|string',
+            'publish_date' => 'required|date_format:Y-m-d'
         ];
     }
 }

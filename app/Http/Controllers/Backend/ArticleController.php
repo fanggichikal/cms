@@ -7,8 +7,6 @@ use App\Http\Requests\ArticleRequest;
 use App\Http\Requests\ArticleUpdateRequest;
 use App\Models\Article;
 use App\Models\Category;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 class ArticleController extends Controller
@@ -47,17 +45,19 @@ class ArticleController extends Controller
      */
     public function store(ArticleRequest $request)
     {
-        // Handle upload gambar jika ada
-        if ($request->hasFile('img')) {
-            $img = $request->file('img')->store('img', 'public');
-        } else {
-            $img = null;
-        }
-        
-
-        // Membuat artikel baru
         $article = Article::create($request->validated());
         
+        if ($request->file('img')) {
+            $file = $request->file('img');
+            $path = $file->store('articles', 'public');
+            $article->img = $path;
+        }else{
+            $path = null;
+        }
+        // Buat slug jika tidak ada
+        $slug = $request->input('slug') ? $request->input('slug') : Str::slug($request->input('title'));
+        
+                
         return redirect()->route('article.index',$article->slug)->with('success', 'Article added successfully');
 
     }
@@ -67,7 +67,8 @@ class ArticleController extends Controller
      */
     public function show(string $slug)
     {
-        $article = Article::where('slug',$slug)->findOrFail();
+        
+        $article = Article::where('slug', $slug)->firstOrFail();
         return view('backend.article.detail', compact('article'));
     }
 
@@ -87,8 +88,7 @@ class ArticleController extends Controller
      */
     public function update(ArticleUpdateRequest $request, $slug)
     {
-        $article = Article::where('slug', $slug)->firstOrFail();
-        $article->update($request->validated());
+
 
         // Handle upload gambar jika ada
         // if ($request->hasFile('img')) {
@@ -96,7 +96,12 @@ class ArticleController extends Controller
         // } else {
         //     $img = null;
         // }
-        $article->update($request->validated());
+
+        $article = Article::where('slug', $slug)->firstOrFail();
+        $data = $request->validated();
+        $data['slug'] = Str::slug($article['title']); 
+        $article->update($data);
+
         if ($request->hasFile('img')) {
             // Hapus gambar lama jika ada
             if ($article->img) {
@@ -107,7 +112,7 @@ class ArticleController extends Controller
             $path = $request->file('img')->store('img', 'public');
             $article->img = $path;
         }
-       
+
         return redirect()->route('article.index',$article->slug)->with('success', 'Article Update successfully');
     }
 

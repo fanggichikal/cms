@@ -28,7 +28,7 @@
     </div>
     @endif
     
-    <form action="{{ route('article.update', $article->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('article.update', $article->slug) }}" method="POST" enctype="multipart/form-data">
     @csrf  
     @method('PUT')
     <input type="hidden" name="oldimg" value="{{$article->img}}">

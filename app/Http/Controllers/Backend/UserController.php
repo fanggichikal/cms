@@ -48,9 +48,7 @@ class UserController extends Controller
                 'access' => $request->access
             ]);
         }
-
-        
-
+      
         return back()->with('Success', ' User Has Been Update');
 
         // dd($request);

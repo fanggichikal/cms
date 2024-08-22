@@ -18,7 +18,7 @@ return new class extends Migration
                 indexName:'articles_category_id'
             );
             $table->string('title');
-            $table->string('slug')->unique()->after('title');
+            $table->string('slug')->unique();
             $table->longText('desc');
             $table->string('img')->nullable();
             $table->integer('views')->default(0);

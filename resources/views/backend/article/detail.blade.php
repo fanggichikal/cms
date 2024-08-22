@@ -23,7 +23,7 @@
         <th>Img</th>
         <td>
             <!-- <img src="{{asset('storage/'.$article->img)}}" alt="" width="30%"> -->
-            <img src="{{ asset('storage/' . $article->img) }}" alt="Image for {{ $article->title }}" width="30%">
+            <img src="{{asset('storage/' .$article->img)}}" alt="Image for {{ $article->title }}" width="30%">
         </td>
       </tr>
       <tr>
@@ -31,7 +31,7 @@
         @if($article->status==0)
               <td> 
                 <span class="badge bg-danger">Private</span>
-              </td>
+              </td> 
             @else
               <td> 
                 <span class="badge bg-success">Publish</span>

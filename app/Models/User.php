@@ -46,8 +46,8 @@ class User extends Authenticatable
         ];
     }
 
-     public function hasRole($access)
+     public function AccessAtribute()
     {
-        return $this->access === $access;
+        return $this->attributes['access'];
     }
 }

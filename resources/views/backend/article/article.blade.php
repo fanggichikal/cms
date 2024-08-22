@@ -61,7 +61,7 @@
             <td>{{$item->publish_date}}</td>
             <td>
                 <div class="text-center">
-                  <a href="{{ route('article.show', $item->id) }}" class="btn btn-success">
+                  <a href="{{ route('article.show', $item->slug) }}" class="btn btn-success">
                     <span data-feather="book-open"></span>
                   </a>
                   <a href="{{ route('article.edit', $item->id) }}" class="btn btn-secondary">
